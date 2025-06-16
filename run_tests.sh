@@ -10,7 +10,11 @@ if [ -d ".venv" ]; then
     if [ $? -eq 0 ]; then
         echo "✅ Virtual environment activated: $(pwd)/.venv"
         echo "Installing/updating requirements..."
-        uv pip install -r requirements.txt
+        pip install -r requirements.txt
+        echo "Installing package in development mode..."
+        pip install -e .
+        echo "Installing Playwright browsers..."
+        playwright install
     else
         echo "❌ Failed to activate virtual environment"
         exit 1

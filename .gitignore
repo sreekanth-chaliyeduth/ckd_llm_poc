@@ -27,6 +27,5 @@ playwright-report/
 test-results/
 
 # Project specific
-reports/
 *.log
 .DS_Store 
