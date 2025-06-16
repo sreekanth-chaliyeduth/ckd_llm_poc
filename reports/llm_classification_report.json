@@ -1,0 +1,22 @@
+{
+  "overall_metrics": {
+    "prediction_accuracy": {
+      "mean": 0.9666666666666667,
+      "std": 0.008164965809277266,
+      "min": 0.95,
+      "max": 0.97
+    },
+    "explanation_quality": {
+      "mean": 0.625,
+      "std": 0.13693063937629152,
+      "min": 0.5,
+      "max": 0.75
+    }
+  },
+  "response_time_analysis": {
+    "mean": 0.4833333333333334,
+    "std": 0.14719601443879743,
+    "min": 0.3,
+    "max": 0.7
+  }
+}
