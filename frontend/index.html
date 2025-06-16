@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKD Prediction System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            display: none;
+        }
+        .error-message {
+            color: red;
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .mobile-menu {
+                display: block;
+            }
+            .desktop-layout {
+                display: none;
+            }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .tablet-layout {
+                display: block;
+            }
+            .desktop-layout {
+                display: none;
+            }
+        }
+        @media (min-width: 1025px) {
+            .desktop-layout {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Chronic Kidney Disease Prediction</h1>
+    
+    <form id="predictionForm">
+        <div class="form-group">
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="blood_pressure">Blood Pressure:</label>
+            <input type="number" id="blood_pressure" name="blood_pressure" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="red_blood_cells">Red Blood Cells:</label>
+            <select id="red_blood_cells" name="red_blood_cells" required>
+                <option value="normal">Normal</option>
+                <option value="abnormal">Abnormal</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="blood_glucose_random">Blood Glucose Random:</label>
+            <input type="number" id="blood_glucose_random" name="blood_glucose_random" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="blood_urea">Blood Urea:</label>
+            <input type="number" id="blood_urea" name="blood_urea" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="serum_creatinine">Serum Creatinine:</label>
+            <input type="number" step="0.1" id="serum_creatinine" name="serum_creatinine" required>
+        </div>
+        
+        <button type="submit">Predict</button>
+    </form>
+    
+    <div class="error-message" id="errorMessage"></div>
+    
+    <div class="result" id="result">
+        <h2>Prediction Result</h2>
+        <p>Probability: <span id="prediction"></span></p>
+        <p>Confidence: <span id="confidence"></span></p>
+        <p>Explanation: <span id="explanation"></span></p>
+        <p>Risk Factors: <span id="riskFactors"></span></p>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                age: parseInt(document.getElementById('age').value),
+                blood_pressure: parseInt(document.getElementById('blood_pressure').value),
+                red_blood_cells: document.getElementById('red_blood_cells').value,
+                blood_glucose_random: parseInt(document.getElementById('blood_glucose_random').value),
+                blood_urea: parseInt(document.getElementById('blood_urea').value),
+                serum_creatinine: parseFloat(document.getElementById('serum_creatinine').value),
+                // Add default values for other required fields
+                specific_gravity: 1.02,
+                albumin: 1,
+                sugar: 0,
+                pus_cell: "normal",
+                pus_cell_clumps: "notpresent",
+                bacteria: "notpresent",
+                sodium: 111,
+                potassium: 2.5,
+                hemoglobin: 11.2,
+                packed_cell_volume: 32,
+                white_blood_cell_count: 6700,
+                red_blood_cell_count: 3.9,
+                hypertension: "yes",
+                diabetes_mellitus: "yes",
+                coronary_artery_disease: "no",
+                appetite: "good",
+                pedal_edema: "yes",
+                anemia: "yes"
+            };
+
+            try {
+                const response = await fetch('http://localhost:8000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ data: formData })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Prediction failed');
+                }
+
+                const result = await response.json();
+                
+                document.getElementById('prediction').textContent = (result.prediction * 100).toFixed(2) + '%';
+                document.getElementById('confidence').textContent = (result.confidence * 100).toFixed(2) + '%';
+                document.getElementById('explanation').textContent = result.explanation;
+                document.getElementById('riskFactors').textContent = result.risk_factors.join(', ');
+                
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'none';
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = 'Error: ' + error.message;
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('result').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
